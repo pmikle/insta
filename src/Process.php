@@ -40,7 +40,7 @@ class Process extends Command
     {
         if (!$this->lockByProcess->acquire()) {
             if ($output->isVerbose()) {
-                $output->writeln('The task is in progress. Please call the script later.');
+                $output->writeln(date('[Y-m-d H:i:s] ') . 'The task is in progress. Please call the script later.');
             }
             return 0;
         }
@@ -48,7 +48,7 @@ class Process extends Command
         $timeLocker = new TimeLocker();
         if (!$timeLocker->isTimeHasCome()) {
             if ($output->isVerbose()) {
-                $output->writeln('The time has not come yet.');
+                $output->writeln(date('[Y-m-d H:i:s] ') . 'The time has not come yet.');
             }
             return 0;
         }
@@ -56,27 +56,35 @@ class Process extends Command
         $message = new Message();
         $login = $input->getArgument('message') ?: Config::$login;
         $password = $input->getArgument('pass') ?: Config::$password;
-        $message = $input->getArgument('message') ?: $message->getMessage();
+        $msg = $input->getArgument('message') ?: $message->getMessage();
         $targetUid = $input->getArgument('targetUid');
 
-        $result = $this->processSendMessage($targetUid, $login, $password, $message);
+        if (!$msg) {
+            if ($output->isVerbose()) {
+                $output->writeln(date('[Y-m-d H:i:s] ') . 'Empty message.');
+            }
+            return 0;
+        }
+        $message->updateIdLastMessage();
+
+        $result = $this->processSendMessage($targetUid, $login, $password, $msg);
         if (!$result) {
             if ($output->isVerbose()) {
-                $output->writeln('Error login.');
+                $output->writeln(date('[Y-m-d H:i:s] ') . 'Error login.');
             }
             return 0;
         }
 
         $timeLocker->setNextTriggerDateTime();
 
-        $output->writeln('Message sent successfully');
+        $output->writeln(date('[Y-m-d H:i:s] ') . 'Message sent successfully');
         return 1;
     }
 
     private function processSendMessage($targetUid, $login, $password, $message)
     {
         $ig = new Instagram();
-        if (!$ig->login($login, $password)) {
+        if ($ig->login($login, $password)) {
             return false;
         }
         $recipients = [

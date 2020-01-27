@@ -14,12 +14,16 @@ class TimeLocker
 
     public function isTimeHasCome()
     {
+        if (!file_exists($this->fileLocker)) {
+            $this->setNextTriggerDateTime();
+            return false;
+        }
         if (!is_readable($this->fileLocker)) {
-            return true;
+            return false;
         }
 
         $nextDTString = file_get_contents($this->fileLocker);
-        $nextDT = \DateTime::createFromFormat('Y-m-d H:i:s', $nextDTString);
+        $nextDT = \DateTime::createFromFormat('Y-m-d H:i:s', $nextDTString, new \DateTimeZone('Europe/Moscow'));
         $nowDT = new \DateTime('now');
 
         return $nextDT <= $nowDT;

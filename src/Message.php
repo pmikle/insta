@@ -19,9 +19,7 @@ class Message
 
     public function getMessage(): string
     {
-        $message = $this->messages[++$this->idLastMessage] ?? '';
-        $this->updateIdLastMessage();
-        return $message;
+        return $this->messages[$this->idLastMessage + 1] ?? '';
     }
 
     private function getIdLastMessage()
@@ -32,8 +30,8 @@ class Message
         return (int)file_get_contents($this->fileLastMessage);
     }
 
-    private function updateIdLastMessage()
+    public function updateIdLastMessage()
     {
-        return file_put_contents($this->fileLastMessage, $this->idLastMessage);
+        return file_put_contents($this->fileLastMessage, ++$this->idLastMessage);
     }
 }
