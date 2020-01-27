@@ -1,2 +1,5 @@
 .idea/
 vendor/
+custom_config.php
+cache/idLastMessage.txt
+cache/timeLocker.txt
