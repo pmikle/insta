@@ -24,7 +24,7 @@ class TimeLocker
 
         $nextDTString = file_get_contents($this->fileLocker);
         $nextDT = \DateTime::createFromFormat('Y-m-d H:i:s', $nextDTString, new \DateTimeZone('Europe/Moscow'));
-        $nowDT = new \DateTime('now');
+        $nowDT = new \DateTime('now', new \DateTimeZone('Europe/Moscow'));
 
         return $nextDT <= $nowDT;
     }

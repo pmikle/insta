@@ -19,7 +19,8 @@ class Message
 
     public function getMessage(): string
     {
-        return $this->messages[$this->idLastMessage + 1] ?? '';
+        $msg = $this->messages[$this->idLastMessage + 1] ?? '';
+        return mb_convert_encoding($msg, 'utf-8', mb_detect_encoding($msg));
     }
 
     private function getIdLastMessage()
