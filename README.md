@@ -61,7 +61,7 @@ return [
     "Message 2",
 ];
 ```
-- add task in crontab
+- add task in crontab with redirecting the standard output stream to the log file
 
 ```bash
 * * * * * php <path_to_script>/bin/console instagram-send-message <targetUid> -v >> <log_path>/<log_filename>

@@ -38,9 +38,11 @@ class Process extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $dateLog = (new \DateTime('now', new \DateTimeZone('Europe/Moscow')))->format('[Y-m-d H:i:s]');
+
         if (!$this->lockByProcess->acquire()) {
             if ($output->isVerbose()) {
-                $output->writeln(date('[Y-m-d H:i:s] ') . 'The task is in progress. Please call the script later.');
+                $output->writeln($dateLog . ' The task is in progress. Please call the script later.');
             }
             return 0;
         }
@@ -48,7 +50,7 @@ class Process extends Command
         $timeLocker = new TimeLocker();
         if (!$timeLocker->isTimeHasCome()) {
             if ($output->isVerbose()) {
-                $output->writeln(date('[Y-m-d H:i:s] ') . 'The time has not come yet.');
+                $output->writeln($dateLog . ' The time has not come yet.');
             }
             return 0;
         }
@@ -61,23 +63,23 @@ class Process extends Command
 
         if (!$msg) {
             if ($output->isVerbose()) {
-                $output->writeln(date('[Y-m-d H:i:s] ') . 'Empty message.');
+                $output->writeln($dateLog . ' Empty message.');
             }
             return 0;
         }
-        $message->updateIdLastMessage();
 
         $result = $this->processSendMessage($targetUid, $login, $password, $msg);
         if (!$result) {
             if ($output->isVerbose()) {
-                $output->writeln(date('[Y-m-d H:i:s] ') . 'Error login.');
+                $output->writeln($dateLog . ' Error login.');
             }
             return 0;
         }
 
+        $message->updateIdLastMessage();
         $timeLocker->setNextTriggerDateTime();
 
-        $output->writeln(date('[Y-m-d H:i:s] ') . 'Message sent successfully');
+        $output->writeln(date($dateLog) . ' Message sent successfully');
         return 1;
     }
 
